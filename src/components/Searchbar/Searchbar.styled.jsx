@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { Field, Form } from 'formik';
 
 export const Head = styled.header`
   top: 0;
@@ -15,22 +14,28 @@ export const Head = styled.header`
   padding-top: 12px;
   padding-bottom: 12px;
   color: #fff;
-  background-color: #3f51b5;
+  background: rgb(65, 88, 136);
+  background: linear-gradient(
+    90deg,
+    rgba(65, 88, 136, 1) 0%,
+    rgba(100, 214, 221, 1) 100%
+  );
   box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2),
     0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
 `;
 
-export const SearchForm = styled(Form)`
+export const SearchForm = styled.form`
   display: flex;
   align-items: center;
   width: 100%;
   max-width: 600px;
-  background-color: #fff;
+  color: rgb(64, 65, 65);
+  background-color: mintcream;
   border-radius: 3px;
   overflow: hidden;
 `;
 
-export const MyStyledInput = styled(Field)`
+export const MyStyledInput = styled.input`
   display: inline-block;
   width: 100%;
   font: inherit;
@@ -51,13 +56,12 @@ export const Btn = styled.button`
   width: 48px;
   height: 48px;
   border: 0;
-  ${
-    '' /*   background-image: url('https://image.flaticon.com/icons/svg/149/149852.svg'); */
-  }
+  background-image: url(https://icon-library.com/images/search-bar-icon-png/search-bar-icon-png-15.jpg);
   background-size: 40%;
   background-repeat: no-repeat;
   background-position: center;
   opacity: 0.6;
+  box-shadow: -5px -5px 10px #18b5c0;
   transition: opacity 250ms cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   outline: none;

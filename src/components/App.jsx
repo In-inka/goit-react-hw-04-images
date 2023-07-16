@@ -6,82 +6,71 @@ import Button from './Button';
 import Notiflix from 'notiflix';
 
 import { Apps } from './App.styled';
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import * as api from '../service/api.js';
 
-export class App extends Component {
-  state = {
-    name: ' ',
-    page: 1,
-    pictures: [],
-    isLoading: false,
-    error: ' ',
-    totalHits: 0,
+export const App = () => {
+  const [name, setName] = useState('');
+  const [page, setPage] = useState(1);
+  const [pictures, setPictures] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [totalHits, setTotalHitls] = useState(0);
+
+  const onClickLoadMore = () => {
+    setPage(prev => prev + 1);
   };
 
-  onClickLoadMore = () => {
-    const { page } = this.state;
-    this.setState({
-      page: page + 1,
-    });
+  const onSearchNamePicture = name => {
+    setName(name);
+    setPage(1);
+    setPictures([]);
+    setTotalHitls(0);
+    setError('');
   };
 
-  onSearchNamePicture = name => {
-    this.setState({
-      name: name,
-      page: 1,
-      pictures: [],
-      totalHits: 0,
-    });
-  };
-
-  async componentDidUpdate(_, prevState) {
-    const { name, page, pictures } = this.state;
+  useEffect(() => {
     const namePicture = name.trim();
-    if (!name) {
+
+    if (!namePicture) {
       return Notiflix.Notify.info('Enter a name to search for!');
     }
 
-    if (prevState.name !== name || prevState.page !== page) {
-      this.setState({
-        isLoading: true,
+    setIsLoading(true);
+
+    api
+      .getPicture(namePicture, page)
+      .then(({ totalHits, hits }) => {
+        if (!totalHits) {
+          return Notiflix.Notify.failure(
+            'Oops... :( nothing was found for your query, please try again!'
+          );
+        }
+
+        setPictures(prev => [...prev, ...hits]);
+        setTotalHitls(totalHits);
+      })
+      .catch(err => {
+        setError(err.response.data);
+        Notiflix.Notify.failure(`Something went wrong ${error}`);
+      })
+      .finally(() => {
+        setIsLoading(false);
+        if (page === 1) {
+          return Notiflix.Notify.success(
+            `Hooray! We found ${totalHits} images.`
+          );
+        }
       });
+  }, [name, page, error, totalHits]);
 
-      await api
-        .getPicture(namePicture, page)
-        .then(({ totalHits, hits }) => {
-          if (!totalHits) {
-            return Notiflix.Notify.failure(
-              'Oops... :( nothing was found for your query, please try again!'
-            );
-          }
-          this.setState({
-            pictures: [...pictures, ...hits],
-            totalHits: totalHits,
-          });
-        })
-        .catch(error => {
-          this.setState({
-            error: error.response.data,
-          });
-          Notiflix.Notify.failure(`Something went wrong`);
-        })
-        .finally(() => {
-          this.setState({ isLoading: false });
-        });
-    }
-  }
-
-  render() {
-    const { isLoading, page, totalHits, pictures } = this.state;
-    const pageNull = Math.ceil(totalHits / api.PER_PAGE);
-    return (
-      <Apps>
-        <Searchbar onSubmit={this.onSearchNamePicture} />
-        <ImageGallery pictures={pictures} />
-        {isLoading && <Loader />}
-        {page < pageNull && <Button onClickLoadMore={this.onClickLoadMore} />}
-      </Apps>
-    );
-  }
-}
+  const pageNull = Math.ceil(totalHits / api.PER_PAGE);
+  return (
+    <Apps>
+      <Searchbar onSubmit={onSearchNamePicture} />
+      <ImageGallery pictures={pictures} />
+      {isLoading && <Loader />}
+      {page < pageNull && <Button onClickLoadMore={onClickLoadMore} />}
+    </Apps>
+  );
+};

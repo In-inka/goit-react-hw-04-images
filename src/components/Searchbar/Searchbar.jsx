@@ -1,4 +1,4 @@
-import { Formik } from 'formik';
+import { useFormik } from 'formik';
 import PropTypes from 'prop-types';
 import {
   Head,
@@ -8,34 +8,34 @@ import {
   MyStyledInput,
 } from './Searchbar.styled';
 
-const initialValues = {
-  name: '',
-};
-
 const Searchbar = ({ onSubmit }) => {
-  const onSubmitNameSearch = (values, { resetForm }) => {
-    onSubmit(values.name);
-    resetForm();
-  };
+  const formik = useFormik({
+    initialValues: {
+      name: '',
+    },
+    onSubmit: (values, { resetForm }) => {
+      onSubmit(values.name);
+      resetForm();
+    },
+  });
 
   return (
     <>
       <Head>
-        <Formik initialValues={initialValues} onSubmit={onSubmitNameSearch}>
-          <SearchForm htmlFor="name">
-            <Btn type="submit">
-              <Label>Search</Label>
-            </Btn>
-
-            <MyStyledInput
-              type="text"
-              autoComplete="off"
-              autoFocus
-              placeholder="Search images and photos"
-              name="name"
-            />
-          </SearchForm>
-        </Formik>
+        <SearchForm htmlFor="name" onSubmit={formik.handleSubmit}>
+          <Btn type="submit">
+            <Label>Search</Label>
+          </Btn>
+          <MyStyledInput
+            type="text"
+            autoComplete="off"
+            autoFocus
+            placeholder="Search images and photos"
+            name="name"
+            value={formik.values.name}
+            onChange={formik.handleChange}
+          />
+        </SearchForm>
       </Head>
     </>
   );
