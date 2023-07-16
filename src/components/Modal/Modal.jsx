@@ -1,5 +1,6 @@
 import { Overlay, ModalStyle } from './Modal.styled';
 import PropTypes from 'prop-types';
+import { useEffect } from 'react';
 
 const Modal = ({ image, tag, onCloseModal }) => {
   const onOpenOverlay = evt => {
@@ -7,6 +8,20 @@ const Modal = ({ image, tag, onCloseModal }) => {
       onCloseModal();
     }
   };
+
+  useEffect(() => {
+    const closeESC = e => {
+      if (e.code === 'Escape') {
+        onCloseModal();
+      }
+    };
+    document.addEventListener('keydown', closeESC);
+
+    return () => {
+      document.addEventListener('keydown', closeESC);
+    };
+  }, [onCloseModal]);
+
   return (
     <>
       <Overlay onClick={onOpenOverlay}>

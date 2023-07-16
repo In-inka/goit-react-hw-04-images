@@ -52,21 +52,17 @@ export const App = () => {
       })
       .catch(err => {
         setError(err.response.data);
-        Notiflix.Notify.failure(`Something went wrong ${error}`);
       })
       .finally(() => {
         setIsLoading(false);
-        if (page === 1) {
-          return Notiflix.Notify.success(
-            `Hooray! We found ${totalHits} images.`
-          );
-        }
       });
-  }, [name, page, error, totalHits]);
+  }, [name, page]);
 
   const pageNull = Math.ceil(totalHits / api.PER_PAGE);
+
   return (
     <Apps>
+      {error && Notiflix.Notify.failure(`Something went wrong ${error}`)}
       <Searchbar onSubmit={onSearchNamePicture} />
       <ImageGallery pictures={pictures} />
       {isLoading && <Loader />}
